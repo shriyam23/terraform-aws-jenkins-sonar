@@ -1,9 +1,9 @@
 variable "security_group" {
-   description = "The security groups assigned to the Jenkins server"
+   description = "The security groups my aws instance"
 }
 
 variable "public_subnet" {
-   description = "The public subnet IDs assigned to the Jenkins server"
+   description = "The public subnet IDs assigned to my aws instance"
 }
 
 data "aws_ami" "ubuntu" {
@@ -22,29 +22,29 @@ data "aws_ami" "ubuntu" {
    owners = ["099720109477"]
 }
 
-resource "aws_instance" "jenkins_server" {
+resource "aws_instance" "my_vm" {
    ami = data.aws_ami.ubuntu.id
    subnet_id = var.public_subnet
-   instance_type = "t2.micro"
+   instance_type = "t2.large"
    vpc_security_group_ids = [var.security_group]
-   key_name = aws_key_pair.tutorial_kp.key_name
+   key_name = aws_key_pair.my_kp.key_name
    user_data = "${file("${path.module}/install_jenkins.sh")}"
 
    tags = {
-      Name = "jenkins_server"
+      Name = "Devops_A1"
    }
 }
 
-resource "aws_key_pair" "tutorial_kp" {
-   key_name = "tutorial_kp"
+resource "aws_key_pair" "my_kp" {
+   key_name = "my_kp"
    public_key = file("${path.module}/tutorial_kp.pub")
 }
 
-resource "aws_eip" "jenkins_eip" {
-   instance = aws_instance.jenkins_server.id
+resource "aws_eip" "server_eip" {
+   instance = aws_instance.my_vm.id
    vpc      = true
 
    tags = {
-      Name = "jenkins_eip"
+      Name = "Devops_A1"
    }
 }

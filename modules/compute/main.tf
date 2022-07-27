@@ -37,7 +37,7 @@ resource "aws_instance" "my_vm" {
 
 resource "aws_key_pair" "my_kp" {
    key_name = "my_kp"
-   public_key = file("${path.module}/tutorial_kp.pub")
+   public_key = file("${path.module}/my_key.pub")
 }
 
 resource "aws_eip" "server_eip" {

@@ -22,4 +22,36 @@ rm  -rf sonarqube*
 sudo groupadd sonar
 sudo useradd -d /opt/sonarqube -g sonar sonar
 sudo chown sonar:sonar /opt/sonarqube -R
-git clone https://github.com/spring-projects/spring-petclinic.git
+sudo bash -c 'cat > /opt/sonarqube/conf/sonar.properties' << EOF
+sonar.jdbc.username=sonar
+sonar.jdbc.password=123
+sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube
+sonar.web.port=9000
+EOF
+echo -e "RUN_AS_USER=sonar" | sudo tee -a /opt/sonarqube/bin/linux-x86-64/sonar.sh
+sudo sysctl -w vm.max_map_count=262144
+sudo bash -c 'cat > /etc/systemd/system/sonar.service' << EOF
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+User=sonar
+Group=sonar
+Restart=always
+
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo sysctl -w vm.max_map_count=262144
+
+
+

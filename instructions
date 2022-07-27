@@ -4,79 +4,26 @@ sudo passwd postgres
 su - postgres
 createuser sonar
 psql
-ALTER USER sonar WITH ENCRYPTED password 'my_strong_password';
+ALTER USER sonar WITH ENCRYPTED password '123';
 CREATE DATABASE sonarqube OWNER sonar;
 GRANT ALL PRIVILEGES ON DATABASE sonarqube to sonar;
 \q
 exit
 
-sudo vim /opt/sonarqube/conf/sonar.properties
-sonar.jdbc.username=sonar
-sonar.jdbc.password=123
-sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube
-sonar.web.port=9000
-
-sudo vim /opt/sonarqube/bin/linux-x86-64/sonar.sh
-	RUN_AS_USER=sonar
-
-sudo vim /etc/sysctl.conf
-	vm.max_map_count=262144
-	fs.file-max=65536
-	ulimit -n 65536
-	ulimit -u 4096
-
-
-sudo sysctl -w vm.max_map_count=262144
-
-sudo vim /etc/systemd/system/sonar.service
-[Unit]
-Description=SonarQube service
-After=syslog.target network.target
-
-[Service]
-Type=forking
-
-ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
-ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
-
-User=sonar
-Group=sonar
-Restart=always
-
-LimitNOFILE=65536
-LimitNPROC=4096
-
-[Install]
-WantedBy=multi-user.target
-
 sudo systemctl enable sonar
 sudo systemctl start sonar
 sudo systemctl status sonar
 
-93ea291a908e05077cb25fce0f988cb8768833a9
+ee1766939251f12d38a6287607cb75939b5157dd
 
 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
 
-https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
 
-pom.xml
-<build>
-    <pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>4.7.0.2747</version>
-            </plugin>
-        </plugins>
-    </pluginManagement>
-</build>
+
 
 https://github.com/spring-projects/spring-petclinic.git
 
-mvn clean install 
-mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=pet-clinic \
-  -Dsonar.host.url=http://52.87.150.155:9000 \
-  -Dsonar.login=93ea291a908e05077cb25fce0f988cb8768833a9
-  -Dsonar.sources=src
+
+
+  52.2.18.43
